@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 
 # Ініціалізація Pygame
 pygame.init()
@@ -40,6 +41,13 @@ def count_mines(row, col):
                 count += 1
     return count
 
+# Функція для розголошення всіх мін
+def reveal_all_mines():
+    for mine in mines:
+        row = mine // MINE_SIZE
+        col = mine % MINE_SIZE
+        revealed[row][col] = True
+
 # Головний цикл гри
 running = True
 while running:
@@ -54,9 +62,11 @@ while running:
 
             if field[row][col] == -1:
                 print("Game Over!")
+                reveal_all_mines()  # Reveal all mines when a mine is clicked
                 running = False
             else:
                 revealed[row][col] = True
+
 
     # Відображення клітинок
     screen.fill(WHITE)
@@ -65,7 +75,11 @@ while running:
             rect = pygame.Rect(col * GRID_SIZE, row * GRID_SIZE, GRID_SIZE, GRID_SIZE)
 
             if revealed[row][col]:
-                pygame.draw.rect(screen, GRAY, rect)
+                if field[row][col] == -1:
+                    pygame.draw.rect(screen, (255, 0, 0), rect)  # Червона клітина для міни
+                else:
+                    pygame.draw.rect(screen, GRAY, rect)
+
                 mines_around = count_mines(row, col)
                 if mines_around > 0:
                     font = pygame.font.Font(None, 36)
@@ -77,6 +91,7 @@ while running:
 
     pygame.display.flip()
 
+time.sleep(300)
 pygame.quit()
 
 
